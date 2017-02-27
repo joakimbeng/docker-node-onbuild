@@ -1,4 +1,4 @@
-FROM joakimbeng/node:6
+FROM joakimbeng/node:7
 
 ONBUILD ARG PORT
 ONBUILD ARG NODE_ENV
