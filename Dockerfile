@@ -12,7 +12,8 @@ ONBUILD EXPOSE $PORT
 ONBUILD COPY package.json package-lock.jso? /project/
 ONBUILD RUN \
   npm config set registry $NPM_REGISTRY \
-  && if [ "$NPM_TOKEN" != "" ]; then npm config set "/${${NPM_REGISTRY#*/}%/}/:_authToken=${NPM_TOKEN}"; fi \
+  && export NPM_REGISTRY_WITHOUT_PROTO="${NPM_REGISTRY#*/}" \
+  && if [ "$NPM_TOKEN" != "" ]; then npm config set "/${NPM_REGISTRY_WITHOUT_PROTO%/}/:_authToken=${NPM_TOKEN}"; fi \
   && if [ -f "package-lock.json" ]; then npm ci; else npm install; fi \
   && if [ "$NODE_ENV" == "production" ]; then npm cache clear --force; fi
 ONBUILD COPY . /project/
