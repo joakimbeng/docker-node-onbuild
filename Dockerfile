@@ -1,4 +1,4 @@
-FROM joakimbeng/node:8
+FROM joakimbeng/node:10
 
 ONBUILD ARG PORT
 ONBUILD ARG NODE_ENV
@@ -9,11 +9,11 @@ ONBUILD ENV NPM_REGISTRY ${NPM_REGISTRY:-https://registry.npmjs.org/}
 ONBUILD ENV PORT ${PORT:-3000}
 ONBUILD ENV NPM_TOKEN ${NPM_TOKEN}
 ONBUILD EXPOSE $PORT
-ONBUILD COPY package.json /project/
+ONBUILD COPY package.json package-lock.jso? /project/
 ONBUILD RUN \
   npm config set registry $NPM_REGISTRY \
   && if [ "$NPM_TOKEN" != "" ]; then npm config set "/${${NPM_REGISTRY#*/}%/}/:_authToken=${NPM_TOKEN}"; fi \
-  && npm install \
-  && if [ "$NODE_ENV" == "production" ]; then npm cache clean; fi
+  && if [ -f "package-lock.json" ]; then npm ci; else npm install; fi \
+  && if [ "$NODE_ENV" == "production" ]; then npm cache clear --force; fi
 ONBUILD COPY . /project/
 
